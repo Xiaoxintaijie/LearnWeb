@@ -1,0 +1,144 @@
+vuex
+
+index.js:
+Vue.use(Vuex)
+const store = new Vuex.Store({
+    state:{},
+    mutations:{},
+    actions:{},
+    getters:{},
+    modules:{
+        a:moduleA
+    },
+})->最后都会分割为对应的js文件，除了state
+
+
+一：作用 集中式状态管理
+
+二：结构、属性
+  2.1 state
+     保存共享的变量
+     组件里使用方法：(this.)$store.state.变量名
+     js文件格式：state:{
+        counter:1000,
+        school:[1,2,3],
+        relationship:{
+            father:'Perter',
+            mother:'Lili',
+            son:'John'
+        }
+     }
+  2.2 getters
+     类似filter方法，在数据中选择满足某些条件的
+     默认是不可以传参数的，如果需要传递参数，那就让getters本身返回一个函数
+     可以调用getters本身的方法作为第二个参数
+     组件里使用方法： (this.)$store.getters.getters里面的方法名
+     js文件格式：getters:{
+        more20Stu(state){
+            return state.school.filter(x > 2);
+        },
+        more20len(state，getters){
+            return getters.more20Stu.length;
+        }
+     }
+  2.3 mutations
+     同步时使用
+     改变state状态的唯一方法
+     可以用常量类型:mutation-types.js,在其中定义我们的常量
+     组件里使用方法：1,this.$store.commit('mutations里面的方法名'，payload);->这里的payload是载荷，理解为传递的参数的占位符,可以是一个变量/对象/数组，也可以没有；
+                   2,this.$store.commit({
+                       type:'mutations里面的方法名',
+                       参数名
+                   })->这里整个对象都指payload
+    js文件格式：mutations:{
+        addStudent(state,payload){
+            //当是写法1时，
+            state.relationship.son = payload/payload[0]/payload.son;
+            //当是写法2时，
+            state.relationship.son = payload.参数名;
+        },
+
+    }
+  2.4 actions
+     异步时使用，但是还是会调用mutations里面的方法；
+     context和store具有相同的属性和方法，都可以调用commmit或者state，但是它们不一样，在modules里面体现
+         一方面是因为 context 不需要 store 那么多额外的方法，
+         另一方面是，方便让用户直接在 context 中 dispatch 或 commit 操作，这也是 local 对象的作用；
+     组件里使用方法：this.$store.dispatch('actions里面的方法名'，payload)
+                               .then(res => {
+                                console.log(res);
+                                })->如果调用方法返回的是一个promise对象，那么后面就可以接.then方法，
+                                    输出的res值就是调用方法返回的值（如果有的话）根据下面实例为finish
+     js文件格式：actions:{
+        upDateInof(context,payload){
+            return new Promise((resolve,reject) => {
+                context.commit('addStudent');
+                console.log(context.state.counter);
+                resolve('finish');
+            })
+        },
+
+     }
+  2.5 modules
+     局部模块
+     当store对象数据太多变得很冗杂的时候，按照需求分割为模块
+     
+     js文件格式：modules：{
+        state:{},
+        mutations:{
+            第一个参数state是局部的，在mutation中不可以访问全局的satat和getter，只能访问到局部的state
+        },
+        actions:{
+            context.commit只会调用模块内部mutations的方法
+            在action中第一个参数context中的context.rootState访问到全局的state，context.rootGetters访问到全局的getter。
+        },
+        getters:{
+            第一个参数state是局部的，在getter中可以通过第三个参数rootState访问到全局的state,可以通过第四个参数rootGetters访问到全局的getter。
+
+        },
+     }
+    组件里使用方法：$store.state.模块名.变量名
+                   this.$store.getters.getters里面的方法名
+                   this.$store.commit()
+                   this.$store.dispatch()
+
+三：store、$store区别
+:this.$store的方式，获取到这个store对象了
+
+四：
+vue组件                                                                         vuex
+
+$store.getters.addStudent                         <-提取状态                    getters
+                                                                                 加工
+$store.state.counter                              <-获取状态                     state
+                                                                                 设置
+this.$store.commit('addStudent',payload)          ->改变状态                   mutations  
+
+五：mapgetters (mapState，mapGetters，mapActions和mapMutations)
+  导入语句：import {mapGetters} from 'vuex'
+  
+  当访问某个数据项嵌套太深了，用$store访问数据太麻烦,并且不方便修改和阅读,我们能不能优化一下代码的格式? 
+  这个时候 map辅助函数可以很好的帮我们做这件事
+  
+  通过引入mapGetters 我们就可以轻松的取到vuex中存储的数据，
+  从代码中可以看出，getters就类似于vue组件中的computed（计算属性），
+  在组件中引入mapGetters就是将vuex中的数据映射到组件的计算属性当中，
+  在组件不多，组件的数据通信不是很多的时候这样写看似将简单的东西复杂化了，
+  但是在稍复杂点的项目中这样会极大的减少工作量，及组件之间数据传递的复杂程度。
+
+
+
+六： 局部模块访问全局的方式         getters、actions有第三参数可以访问全局的state\getters
+    局部模块访问本身的方式         默认mutations\getters\actions第一个参数都是局部的state
+    全局访问局部模块的方式         ？？？
+
+    组件中访问局部模块和全局的方式   除了访问state语句不一样，其他都是一样的
+
+    局部模块：moduleA.js
+    全局：index.js
+    组件：App.vue
+
+
+七：事件总线
+
+八：vue通信使用方法   .native使用
