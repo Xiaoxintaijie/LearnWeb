@@ -270,6 +270,8 @@ Object.setPrototypeOf()，Object.getPrototypeOf()
  > 变量提升的优点: 1. 提高性能  2. 容错性更好
 暂时性死区 不声明不能使用
 块级作用域
+- 无var声明的变量均为全局变，可以随意修改
+
 
 #### 5.箭头函数
 
