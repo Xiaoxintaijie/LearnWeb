@@ -282,7 +282,7 @@ Object.setPrototypeOf()，Object.getPrototypeOf()
 - rest接收函数多余参数/没有给出名称的参数
   arguments是指所有的参数
 - rest形成的是一个数组，属于数组实例，可以用sort、pop等数组方法
-  arguments是类数组，属于对象，不具备数组的原型方法，有其他作用
+  arguments是**类数组**，属于对象，不具备数组的原型方法，有其他作用
 - rest要放在形参的最后，不能再有其他参数
 - 函数的length属性，不包括rest参数
 - rest可以把函数的多个入参收敛进一个数组里
