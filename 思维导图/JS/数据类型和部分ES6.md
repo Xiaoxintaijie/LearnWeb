@@ -197,6 +197,7 @@ slice
   使用方式：object instanceof constructor 
   返回布尔值
   可以准确地判断复杂引用数据类型，但是不能正确判断基础数据类型
+  构造函数通过new可以实例对象，instanceof能判断这个对象是否是之前那个构造函数生成的对象
 
 - Object.prototype.toString(.call)
   使用方式：Object.prototype.toString.call(1)    // "[object Number]"
